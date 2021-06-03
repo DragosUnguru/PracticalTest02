@@ -23,8 +23,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CommunicationThread extends Thread {
     private ServerThread serverThread;
@@ -54,7 +57,7 @@ public class CommunicationThread extends Thread {
 
             String ip = socket.getInetAddress().toString();
             if (data.startsWith(Constants.REQUEST_SET)) {
-                String hourMinute = data.substring(data.indexOf(","));
+                String hourMinute = data.substring(data.indexOf(",") + 1);
                 serverThread.putAlarm(ip, hourMinute);
 
                 // Write through socket to client.
@@ -91,9 +94,42 @@ public class CommunicationThread extends Thread {
                 bufferedReader = Utilities.getReader(timeSocket);
                 bufferedReader.readLine();
                 String dayTimeProtocol = bufferedReader.readLine();
+                String serverTime = "(null)";
+
+                if (dayTimeProtocol != null) {
+                    String[] split = dayTimeProtocol.split(":");
+                    String serverHourStr = split[0].substring(split[0].length() - 3).trim();
+                    if (serverHourStr.startsWith("0")) {
+                        serverHourStr = serverHourStr.substring(1);
+                    }
+                    int serverHour = Integer.parseInt(serverHourStr);
+                    int serverMinute = Integer.parseInt(split[1]);
+
+
+                    String clientAlarm = serverThread.getAlarm(ip);
+                    Log.e(Constants.TAG, "[COMMUNICATION THREAD] clientAlarm: " + clientAlarm);
+                    if (clientAlarm == null) {
+                        printWriter.println("None");
+                        printWriter.flush();
+
+                        return;
+                    }
+
+                    String[] splitClient = clientAlarm.split(",");
+
+                    int clientHour = Integer.parseInt(splitClient[0]);
+                    int clientMinute = Integer.parseInt(splitClient[1]);
+
+                    if (clientHour < serverHour || (clientHour == serverHour && clientMinute < serverMinute)) {
+                        serverTime = "active";
+                    }
+                    else {
+                        serverTime = "inactive";
+                    }
+                }
 
                 // Write through socket to client.
-                printWriter.println(dayTimeProtocol);
+                printWriter.println(serverTime);
                 printWriter.flush();
             }
 

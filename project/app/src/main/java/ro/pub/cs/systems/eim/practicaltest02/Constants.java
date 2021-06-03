@@ -4,7 +4,7 @@ public class Constants {
     public static final String TAG = "[COLOCVIU]";
 
     // API
-    public static final String WEB_SERVICE_ADDRESS = "http://utcnist.colorado.edu";
+    public static final String WEB_SERVICE_ADDRESS = "utcnist.colorado.edu";
     public static final int WEB_SERVICE_PORT = 13;
     public static final String LOCALHOST = "localhost";
     public static final String QUERY_ATTRIBUTE = "q"; // =<city>
