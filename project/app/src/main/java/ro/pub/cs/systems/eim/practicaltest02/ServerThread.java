@@ -12,15 +12,15 @@ public class ServerThread extends Thread {
     private ServerSocket serverSocket;
     private HashMap<String, String> alarms;
 
-    public String getAlarm(String ip) {
+    public synchronized String getAlarm(String ip) {
         return this.alarms.containsKey(ip) ? alarms.get(ip) : null;
     }
 
-    public void putAlarm(String ip, String hourMinute) {
+    public synchronized void putAlarm(String ip, String hourMinute) {
         this.alarms.put(ip, hourMinute);
     }
 
-    public void removeAlarm(String ip) {
+    public synchronized void removeAlarm(String ip) {
         this.alarms.remove(ip);
     }
 

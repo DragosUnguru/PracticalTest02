@@ -69,9 +69,9 @@ public class CommunicationThread extends Thread {
                 printWriter.flush();
             }
             else if (data.startsWith(Constants.REQUEST_POLL)) {
-                // Create HTTP client for GET request.
-                HttpClient httpClient = new DefaultHttpClient();
-                HttpGet httpPost = new HttpGet(Constants.WEB_SERVICE_ADDRESS);
+//                // Create HTTP client for GET request.
+//                HttpClient httpClient = new DefaultHttpClient();
+//                HttpGet httpPost = new HttpGet(Constants.WEB_SERVICE_ADDRESS);
 
 //                // Add query params.
 //                List<NameValuePair> params = new ArrayList<>();
@@ -79,16 +79,21 @@ public class CommunicationThread extends Thread {
 //                UrlEncodedFormEntity urlEncodedFormEntity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
 //                httpPost.setEntity(urlEncodedFormEntity);
 
-                // Get response.
-                ResponseHandler<String> responseHandler = new BasicResponseHandler();
-                String pageSourceCode = httpClient.execute(httpPost, responseHandler);
-                if (pageSourceCode == null) {
-                    Log.e(Constants.TAG, "[COMMUNICATION THREAD] Error getting the information from the webservice!");
-                    return;
-                }
+//                // Get response.
+//                ResponseHandler<String> responseHandler = new BasicResponseHandler();
+//                String pageSourceCode = httpClient.execute(httpPost, responseHandler);
+//                if (pageSourceCode == null) {
+//                    Log.e(Constants.TAG, "[COMMUNICATION THREAD] Error getting the information from the webservice!");
+//                    return;
+//                }
+
+                Socket timeSocket = new Socket(Constants.WEB_SERVICE_ADDRESS, Constants.WEB_SERVICE_PORT);
+                bufferedReader = Utilities.getReader(timeSocket);
+                bufferedReader.readLine();
+                String dayTimeProtocol = bufferedReader.readLine();
 
                 // Write through socket to client.
-                printWriter.println(pageSourceCode);
+                printWriter.println(dayTimeProtocol);
                 printWriter.flush();
             }
 
