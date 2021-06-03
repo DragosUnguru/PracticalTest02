@@ -3,6 +3,7 @@ package ro.pub.cs.systems.eim.practicaltest02;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.text.Editable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,7 +26,7 @@ public class PracticalTest02MainActivity extends AppCompatActivity {
     private TextView responseOutputTextView;
 
     private ServerThread serverThread;
-//    private ClientThread clientThread;
+    private ClientThread clientThread;
 
 
     private final ButtonHandler buttonHandler = new ButtonHandler();
@@ -44,20 +45,19 @@ public class PracticalTest02MainActivity extends AppCompatActivity {
                 }
 
                 // Start server thread.
-                int port = Integer.parseInt(button.getText().toString());
+                int port = Integer.parseInt(serverPortEditText.getText().toString());
                 serverThread = new ServerThread(port);
                 serverThread.start();
             }
             else if (v.getId() == R.id.client_button) {
                 // Client request button pressed.
-                String hour = hourEditText.getText().toString();
+                Editable hour = hourEditText.getText();
                 String clientPort = clientPortEditText.getText().toString();
-                String minute = minuteEditText.getText().toString();
+                Editable minute = minuteEditText.getText();
                 String requestType = requestTypeSpinner.getSelectedItem().toString();
 
                 // Null & empty checks.
-                if (requestType == null ||
-                        (requestType.equals(Constants.REQUEST_SET) && (hour == null || hour.isEmpty() || minute == null || minute.isEmpty()))) {
+                if (requestType.equals(Constants.REQUEST_SET) && (hour == null || hour.toString().isEmpty() || minute == null || minute.toString().isEmpty())) {
                     Toast.makeText(getApplicationContext(), "[MAIN ACTIVITY] Client connection parameters should be filled!", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -68,8 +68,12 @@ public class PracticalTest02MainActivity extends AppCompatActivity {
 
                 responseOutputTextView.setText("");
 
-//                clientThread = new ClientThread(clientAddress, Integer.parseInt(clientPort), city, informationType, weatherForecastTextView);
-//                clientThread.start();
+                String hourText = (hour == null) ? null : hour.toString();
+                String minuteText = (minute == null) ? null : minute.toString();
+
+                clientThread = new ClientThread(Integer.parseInt(clientPort), Constants.LOCALHOST,
+                        requestType, responseOutputTextView, hourText, minuteText);
+                clientThread.start();
             }
         }
     }
